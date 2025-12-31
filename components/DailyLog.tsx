@@ -7,9 +7,10 @@ import { saveDailyLog, getDailyLogs } from '../services/storage';
 interface DailyLogProps {
   targetDate?: string;
   onViewHistory: () => void;
+  onCelebrate?: () => void;
 }
 
-const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory }) => {
+const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory, onCelebrate }) => {
   // Helper to get local date string YYYY-MM-DD
   const getTodayStr = () => {
     const d = new Date();
@@ -61,6 +62,11 @@ const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory }) => {
       notes
     };
     saveDailyLog(entry);
+    
+    if (snacked === false) {
+        onCelebrate?.();
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

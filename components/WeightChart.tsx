@@ -11,10 +11,15 @@ import {
 } from 'recharts';
 import { getSettings, getWeightLogs, saveWeightLog } from '../services/storage';
 import { UserSettings, WeightEntry } from '../types';
-import { Plus, Target } from 'lucide-react';
-import { format, differenceInDays, parseISO } from 'date-fns';
+import { Plus, Target, History, ArrowRight, TrendingDown, TrendingUp } from 'lucide-react';
+import { format, differenceInDays, parseISO, subDays } from 'date-fns';
 
-const WeightChart: React.FC = () => {
+interface WeightChartProps {
+  onViewHistory: () => void;
+  onCelebrate?: () => void;
+}
+
+const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate }) => {
   const [settings] = useState<UserSettings>(getSettings());
   const [logs, setLogs] = useState<WeightEntry[]>([]);
   const [newWeight, setNewWeight] = useState<string>('');
@@ -38,6 +43,12 @@ const WeightChart: React.FC = () => {
     if (!newWeight) return;
     const weightVal = parseFloat(newWeight);
     if (isNaN(weightVal)) return;
+
+    // Check for progress to celebrate
+    const latestWeight = logs.length > 0 ? logs[logs.length - 1].weight : settings.startWeight;
+    if (weightVal < latestWeight) {
+        onCelebrate?.();
+    }
 
     const entry: WeightEntry = { date: logDate, weight: weightVal };
     saveWeightLog(entry);
@@ -76,6 +87,42 @@ const WeightChart: React.FC = () => {
         onTrack: diff <= 0
     };
   }, [logs, settings]);
+
+  // Calculate Weekly Averages
+  const weeklyStats = useMemo(() => {
+    const today = new Date();
+    // Current Window: Last 7 days (including today)
+    const currentWindowStart = subDays(today, 6);
+    const currentWindowStartStr = format(currentWindowStart, 'yyyy-MM-dd');
+    
+    // Previous Window: 7 days before that
+    const prevWindowEnd = subDays(currentWindowStart, 1);
+    const prevWindowStart = subDays(prevWindowEnd, 6);
+    
+    const prevWindowStartStr = format(prevWindowStart, 'yyyy-MM-dd');
+    const prevWindowEndStr = format(prevWindowEnd, 'yyyy-MM-dd');
+
+    // Filter logs
+    const currentLogs = logs.filter(l => l.date >= currentWindowStartStr);
+    const prevLogs = logs.filter(l => l.date >= prevWindowStartStr && l.date <= prevWindowEndStr);
+
+    const calculateAvg = (entries: WeightEntry[]) => {
+        if (entries.length === 0) return 0;
+        const sum = entries.reduce((acc, curr) => acc + curr.weight, 0);
+        return sum / entries.length;
+    };
+
+    const currentAvg = calculateAvg(currentLogs);
+    const prevAvg = calculateAvg(prevLogs);
+    const diff = currentAvg - prevAvg;
+
+    return {
+        currentAvg: currentAvg > 0 ? currentAvg.toFixed(2) : null,
+        prevAvg: prevAvg > 0 ? prevAvg.toFixed(2) : null,
+        diff: (currentAvg > 0 && prevAvg > 0) ? diff.toFixed(2) : null,
+        hasData: currentAvg > 0 && prevAvg > 0
+    };
+  }, [logs]);
 
   // Calculate Chart Data
   const chartData = useMemo(() => {
@@ -139,78 +186,130 @@ const WeightChart: React.FC = () => {
   return (
     <div className="space-y-6 pb-20">
       <div className="bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Weight Tracker</h2>
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-800">Weight Tracker</h2>
+            <button 
+                onClick={onViewHistory}
+                className="text-indigo-600 hover:bg-indigo-50 p-2 rounded-full transition-colors flex items-center gap-1 text-xs font-bold"
+            >
+                <History size={18} /> History
+            </button>
+        </div>
         
-        {/* Comparison Box */}
+        {/* Weekly Avg Comparison */}
+        {weeklyStats.hasData && (
+             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 mb-6">
+                <h3 className="text-indigo-800 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wider">
+                     <Target size={14} /> Weekly Trend (7-Day Avg)
+                </h3>
+                <div className="flex items-center justify-around">
+                    <div className="text-center">
+                         <div className="text-[10px] uppercase text-gray-500 font-semibold mb-1">Previous 7 Days</div>
+                         <div className="font-bold text-gray-500 text-lg">{weeklyStats.prevAvg} <span className="text-xs">kg</span></div>
+                    </div>
+                    
+                    <div className="flex flex-col items-center">
+                        <ArrowRight size={16} className="text-indigo-300 mb-1" />
+                        {Number(weeklyStats.diff) < 0 ? (
+                            <div className="flex items-center text-green-600 bg-green-100 px-2 py-1 rounded-md text-xs font-bold">
+                                <TrendingDown size={12} className="mr-1" />
+                                {Math.abs(Number(weeklyStats.diff))} kg
+                            </div>
+                        ) : (
+                            <div className="flex items-center text-red-500 bg-red-100 px-2 py-1 rounded-md text-xs font-bold">
+                                <TrendingUp size={12} className="mr-1" />
+                                +{Math.abs(Number(weeklyStats.diff))} kg
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="text-center">
+                         <div className="text-[10px] uppercase text-gray-500 font-semibold mb-1">Last 7 Days</div>
+                         <div className="font-bold text-indigo-700 text-2xl">{weeklyStats.currentAvg} <span className="text-sm">kg</span></div>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* Comparison Box (Target vs Actual) */}
         {weightComparison && (
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 bg-gradient-to-br from-indigo-50 to-white">
-                <h3 className="text-indigo-800 font-bold mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
-                    <Target size={16} /> Current Status
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+                <h3 className="text-gray-500 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wide">
+                    Vs Goal Plan
                 </h3>
                 <div className="flex items-center justify-between mb-3">
                     <div>
-                        <div className="text-xs text-gray-500 uppercase tracking-wide">Target Today</div>
-                        <div className="text-2xl font-bold text-gray-400">{weightComparison.target} <span className="text-sm">kg</span></div>
+                        <div className="text-xs text-gray-400">Target Today</div>
+                        <div className="text-xl font-bold text-gray-400">{weightComparison.target} <span className="text-sm">kg</span></div>
                     </div>
                     
                     <div className="text-right">
-                        <div className="text-xs text-gray-500 uppercase tracking-wide">Current</div>
-                        <div className={`text-2xl font-bold ${weightComparison.onTrack ? 'text-green-600' : 'text-orange-500'}`}>
+                        <div className="text-xs text-gray-400">Current</div>
+                        <div className={`text-xl font-bold ${weightComparison.onTrack ? 'text-green-600' : 'text-orange-500'}`}>
                             {weightComparison.current} <span className="text-sm">kg</span>
                         </div>
                     </div>
                 </div>
-                <div className={`mt-1 text-sm font-medium p-3 rounded-lg text-center shadow-sm ${weightComparison.onTrack ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
+                <div className={`mt-1 text-xs font-medium p-2 rounded-lg text-center ${weightComparison.onTrack ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-700'}`}>
                     {weightComparison.onTrack 
-                        ? `🎉 Awesome! You are ${Math.abs(weightComparison.diff).toFixed(1)} kg ahead of your target.` 
-                        : `⚠️ You are ${Math.abs(weightComparison.diff).toFixed(1)} kg behind target. Keep pushing!`}
+                        ? `You are ${Math.abs(weightComparison.diff).toFixed(1)} kg ahead of schedule!` 
+                        : `You are ${Math.abs(weightComparison.diff).toFixed(1)} kg behind schedule.`}
                 </div>
             </div>
         )}
 
         {/* Input Section */}
-        <div className="flex gap-2 items-end mb-6 bg-gray-50 p-4 rounded-lg">
-           <div className="flex-1">
-             <label className="block text-xs text-gray-500 mb-1">Date</label>
-             <input 
-                type="date" 
-                value={logDate} 
-                onChange={(e) => setLogDate(e.target.value)}
-                className="w-full p-2 border rounded text-sm"
-              />
-           </div>
-           <div className="flex-1">
-             <label className="block text-xs text-gray-500 mb-1">Weight (kg)</label>
-             <input 
-                type="number" 
-                step="0.1"
-                value={newWeight} 
-                onChange={(e) => setNewWeight(e.target.value)}
-                placeholder="e.g. 61.5"
-                className="w-full p-2 border rounded text-sm"
-              />
-           </div>
-           <button 
-             onClick={handleAddWeight}
-             className="bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700 h-10 w-10 flex items-center justify-center"
-           >
-             <Plus size={20} />
-           </button>
+        <div className="bg-indigo-50/50 p-4 rounded-2xl mb-8 border border-indigo-100">
+            <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                <Plus size={16} className="text-indigo-500" /> Log New Weight
+            </h3>
+            <div className="flex gap-3 items-end">
+                <div className="w-1/3">
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Date</label>
+                    <input 
+                        type="date" 
+                        value={logDate} 
+                        onChange={(e) => setLogDate(e.target.value)}
+                        className="w-full h-14 px-3 bg-white border-2 border-transparent hover:border-indigo-100 rounded-xl text-gray-600 font-semibold text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none shadow-sm"
+                    />
+                </div>
+                <div className="flex-1">
+                    <label className="block text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-1.5 ml-1">Weight</label>
+                    <div className="relative">
+                        <input 
+                            type="number" 
+                            step="0.1"
+                            value={newWeight} 
+                            onChange={(e) => setNewWeight(e.target.value)}
+                            placeholder="0.0"
+                            className="w-full h-14 pl-4 pr-10 text-3xl font-black text-indigo-900 bg-white border-2 border-transparent hover:border-indigo-100 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none shadow-sm placeholder-indigo-100"
+                        />
+                        <span className="absolute right-4 bottom-3 text-sm font-bold text-gray-400 pointer-events-none mb-1">kg</span>
+                    </div>
+                </div>
+                <button 
+                    onClick={handleAddWeight}
+                    disabled={!newWeight}
+                    className="h-14 w-14 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 active:scale-95 transition-all flex items-center justify-center flex-shrink-0 disabled:opacity-50 disabled:shadow-none"
+                >
+                    <Plus size={32} strokeWidth={3} />
+                </button>
+            </div>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <div className="text-xs text-blue-600 uppercase font-bold tracking-wider">Start</div>
-                <div className="text-lg font-bold text-blue-900">{settings.startWeight} kg</div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Start</div>
+                <div className="text-lg font-bold text-gray-700">{settings.startWeight} kg</div>
             </div>
             <div className="text-center p-3 bg-purple-50 rounded-lg">
                 <div className="text-xs text-purple-600 uppercase font-bold tracking-wider">Current</div>
                 <div className="text-lg font-bold text-purple-900">{latestWeight} kg</div>
             </div>
-             <div className="text-center p-3 bg-green-50 rounded-lg">
-                <div className="text-xs text-green-600 uppercase font-bold tracking-wider">Goal</div>
-                <div className="text-lg font-bold text-green-900">{settings.goalWeight} kg</div>
+             <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Goal</div>
+                <div className="text-lg font-bold text-gray-700">{settings.goalWeight} kg</div>
             </div>
         </div>
 

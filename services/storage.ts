@@ -40,6 +40,12 @@ export const saveWeightLog = (entry: WeightEntry): void => {
   localStorage.setItem(STORAGE_KEYS.WEIGHT_LOGS, JSON.stringify(filtered));
 };
 
+export const deleteWeightLog = (date: string): void => {
+  const logs = getWeightLogs();
+  const filtered = logs.filter(l => l.date !== date);
+  localStorage.setItem(STORAGE_KEYS.WEIGHT_LOGS, JSON.stringify(filtered));
+};
+
 export const getSettings = (): UserSettings => {
   const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
   return data ? JSON.parse(data) : DEFAULT_SETTINGS;

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { AppView, DailyEntry, UserSettings } from './types';
 import DailyLog from './components/DailyLog';
 import WeightChart from './components/WeightChart';
+import WeightHistory from './components/WeightHistory';
 import AICoach from './components/AICoach';
 import HistoryLog from './components/HistoryLog';
 import DashboardWeightChart from './components/DashboardWeightChart';
 import SettingsView from './components/SettingsView';
-import { getDailyLogs, getSettings, updateUserSetting, saveDailyLog, saveWeightLog } from './services/storage';
+import Celebration from './components/Celebration';
+import { getDailyLogs, getSettings, updateUserSetting, saveDailyLog, saveWeightLog, getWeightLogs } from './services/storage';
 import { getMotivation } from './services/gemini';
 import { Home, PenTool, TrendingDown, MessageCircle, Calendar, Trophy, Edit2, Check, CheckCircle, XCircle, Scale, Settings } from 'lucide-react';
 
@@ -21,6 +23,8 @@ const App: React.FC = () => {
   const [trackerDate, setTrackerDate] = useState<string | undefined>(undefined);
   const [quickWeight, setQuickWeight] = useState('');
   const [lastUpdated, setLastUpdated] = useState(Date.now());
+  const [isCelebrating, setIsCelebrating] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState("Great Job!");
 
   // Helper to get local date string YYYY-MM-DD
   const getTodayStr = () => {
@@ -57,6 +61,11 @@ const App: React.FC = () => {
     }
   }, [currentView, lastUpdated]); 
 
+  const triggerCelebration = (msg: string = "Great Job!") => {
+    setCelebrationMessage(msg);
+    setIsCelebrating(true);
+  };
+
   const handleSaveGoal = () => {
     const newGoal = parseInt(streakGoalInput);
     if (!isNaN(newGoal) && newGoal > 0) {
@@ -84,6 +93,8 @@ const App: React.FC = () => {
     if (snacked) {
         setTrackerDate(todayStr);
         setCurrentView(AppView.TRACKER);
+    } else {
+        triggerCelebration("Clean Streak!");
     }
   };
 
@@ -91,6 +102,17 @@ const App: React.FC = () => {
     const val = parseFloat(quickWeight);
     if (isNaN(val) || val <= 0) return;
     
+    // Check if progress
+    const currentWeights = getWeightLogs();
+    if (currentWeights.length > 0) {
+        const lastWeight = currentWeights[currentWeights.length - 1].weight;
+        if (val < lastWeight) {
+            triggerCelebration("Weight Down!");
+        }
+    } else {
+        triggerCelebration("First Step!");
+    }
+
     saveWeightLog({
         date: getTodayStr(),
         weight: val
@@ -116,10 +138,22 @@ const App: React.FC = () => {
             <DailyLog 
                 targetDate={trackerDate} 
                 onViewHistory={() => setCurrentView(AppView.HISTORY)} 
+                onCelebrate={() => triggerCelebration("Clean Day!")}
             />
         );
       case AppView.WEIGHT:
-        return <WeightChart />;
+        return (
+            <WeightChart 
+                onViewHistory={() => setCurrentView(AppView.WEIGHT_HISTORY)}
+                onCelebrate={() => triggerCelebration("Progress Made!")}
+            />
+        );
+      case AppView.WEIGHT_HISTORY:
+        return (
+            <WeightHistory 
+                onBack={() => setCurrentView(AppView.WEIGHT)}
+            />
+        );
       case AppView.COACH:
         return <AICoach />;
       case AppView.HISTORY:
@@ -304,7 +338,7 @@ const App: React.FC = () => {
                             }
                         }}
                         placeholder="kg"
-                        className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg font-semibold text-gray-700"
+                        className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg font-bold text-gray-900 bg-white placeholder-gray-400"
                     />
                     <button 
                         onClick={handleQuickWeightSave}
@@ -365,6 +399,14 @@ const App: React.FC = () => {
       <div className="p-4">
         {renderContent()}
       </div>
+
+      {/* Celebration Overlay */}
+      {isCelebrating && (
+        <Celebration 
+            message={celebrationMessage}
+            onComplete={() => setIsCelebrating(false)} 
+        />
+      )}
 
       {/* Bottom Nav */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-md mx-auto">
