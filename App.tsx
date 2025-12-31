@@ -177,21 +177,22 @@ const App: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Header / Hero */}
-            <div className="bg-gradient-to-r from-teal-500 to-teal-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl p-6 text-white shadow-lg shadow-cyan-200/50 relative overflow-hidden">
                {/* Decorative background circle */}
                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+               <div className="absolute top-20 -left-10 w-32 h-32 bg-cyan-300 opacity-20 rounded-full blur-3xl"></div>
 
               <h1 className="text-2xl font-bold mb-2 relative z-10">Jan 1, 2026 Starts Now</h1>
-              <p className="opacity-90 text-sm mb-6 relative z-10 italic">
+              <p className="opacity-90 text-sm mb-6 relative z-10 italic font-medium text-cyan-50">
                 "{motivation}"
               </p>
               
               {/* Streak Goal Section */}
-              <div className="bg-white/15 backdrop-blur-md rounded-xl p-4 border border-white/20 relative z-10">
+              <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 relative z-10 shadow-inner">
                 <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
-                        <Trophy size={20} className={isGoalMet ? "text-yellow-300" : "text-white/80"} />
-                        <span className="font-semibold text-sm uppercase tracking-wide opacity-90">Clean Streak Goal</span>
+                        <Trophy size={20} className={isGoalMet ? "text-yellow-300" : "text-cyan-100"} />
+                        <span className="font-semibold text-sm uppercase tracking-wide opacity-90 text-cyan-50">Clean Streak</span>
                     </div>
                     
                     {isEditingGoal ? (
@@ -200,10 +201,10 @@ const App: React.FC = () => {
                                 type="number" 
                                 value={streakGoalInput}
                                 onChange={(e) => setStreakGoalInput(e.target.value)}
-                                className="w-12 text-teal-800 rounded px-1 py-0.5 text-center font-bold text-sm"
+                                className="w-12 text-cyan-800 rounded px-1 py-0.5 text-center font-bold text-sm"
                                 autoFocus
                             />
-                            <button onClick={handleSaveGoal} className="bg-white text-teal-700 p-1 rounded hover:bg-teal-50">
+                            <button onClick={handleSaveGoal} className="bg-white text-cyan-700 p-1 rounded hover:bg-cyan-50">
                                 <Check size={14} />
                             </button>
                         </div>
@@ -212,7 +213,7 @@ const App: React.FC = () => {
                             onClick={() => setIsEditingGoal(true)} 
                             className="flex items-center gap-1 text-xs opacity-70 hover:opacity-100 transition-opacity bg-white/10 px-2 py-1 rounded"
                         >
-                            <span>Goal: {settings.streakGoal} days</span>
+                            <span>Goal: {settings.streakGoal}</span>
                             <Edit2 size={10} />
                         </button>
                     )}
@@ -222,7 +223,7 @@ const App: React.FC = () => {
                     <span className="text-4xl font-bold leading-none">{streak}</span>
                     <span className="text-sm opacity-80 mb-1">/ {settings.streakGoal} days</span>
                     {isGoalMet && (
-                        <span className="ml-auto text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full">
+                        <span className="ml-auto text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full shadow-sm">
                             Goal Met!
                         </span>
                     )}
@@ -231,7 +232,7 @@ const App: React.FC = () => {
                 {/* Progress Bar */}
                 <div className="w-full bg-black/20 rounded-full h-3 overflow-hidden">
                     <div 
-                        className={`h-full rounded-full transition-all duration-1000 ease-out ${isGoalMet ? 'bg-gradient-to-r from-yellow-300 to-yellow-500' : 'bg-white'}`}
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${isGoalMet ? 'bg-gradient-to-r from-yellow-300 to-yellow-500' : 'bg-cyan-200'}`}
                         style={{ width: `${progressPercent}%` }}
                     ></div>
                 </div>
@@ -239,16 +240,15 @@ const App: React.FC = () => {
             </div>
 
             {/* Calendar Preview */}
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              <h3 className="font-bold text-gray-700 mb-4 flex justify-between items-center">
-                <div className="flex items-center gap-2"><Calendar size={18} /> Recent Activity</div>
-                <button onClick={() => setCurrentView(AppView.HISTORY)} className="text-teal-600 text-xs font-bold hover:underline">See All</button>
+            <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
+              <h3 className="font-bold text-slate-700 mb-4 flex justify-between items-center">
+                <div className="flex items-center gap-2"><Calendar size={18} className="text-cyan-600" /> Recent Tides</div>
+                <button onClick={() => setCurrentView(AppView.HISTORY)} className="text-cyan-600 text-xs font-bold hover:underline">See All</button>
               </h3>
               <div className="flex justify-between items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {Array.from({ length: 7 }).map((_, i) => {
                   const d = new Date();
                   d.setDate(d.getDate() - (6 - i));
-                  // Create local date string
                   const year = d.getFullYear();
                   const month = String(d.getMonth() + 1).padStart(2, '0');
                   const day = String(d.getDate()).padStart(2, '0');
@@ -256,9 +256,10 @@ const App: React.FC = () => {
                   
                   const log = logs.find(l => l.date === dateStr);
                   
-                  let statusColor = 'bg-gray-100 border-gray-200';
+                  let statusColor = 'bg-slate-50 border-slate-100';
                   if (log) {
-                    statusColor = log.snacked ? 'bg-orange-100 border-orange-300' : 'bg-green-100 border-green-300';
+                    // Rose for snack, Emerald for clean
+                    statusColor = log.snacked ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200';
                   }
 
                   return (
@@ -267,8 +268,8 @@ const App: React.FC = () => {
                         onClick={() => handleEditHistory(dateStr)}
                         className={`flex flex-col items-center min-w-[40px] p-2 rounded-lg border cursor-pointer active:scale-95 transition-transform ${statusColor}`}
                     >
-                      <span className="text-xs text-gray-500 mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                      <span className={`text-sm font-bold ${log ? (log.snacked ? 'text-orange-600' : 'text-green-600') : 'text-gray-400'}`}>
+                      <span className="text-xs text-slate-400 mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                      <span className={`text-sm font-bold ${log ? (log.snacked ? 'text-rose-500' : 'text-emerald-600') : 'text-slate-300'}`}>
                         {d.getDate()}
                       </span>
                     </div>
@@ -278,14 +279,14 @@ const App: React.FC = () => {
             </div>
 
             {/* Quick Actions Snack */}
-            <div className="bg-white rounded-xl shadow-sm p-5">
+            <div className="bg-white rounded-xl shadow-sm p-5 border border-slate-100">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-700 flex items-center gap-2">
-                        <CheckCircle size={18} className="text-teal-600"/> Today's Check-in
+                    <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                        <CheckCircle size={18} className="text-cyan-600"/> Today's Check-in
                     </h3>
                     <button 
                         onClick={handleViewTracker} 
-                        className="text-xs font-semibold text-teal-600 bg-teal-50 px-3 py-1 rounded-full hover:bg-teal-100"
+                        className="text-xs font-semibold text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full hover:bg-cyan-100"
                     >
                         Add Details
                     </button>
@@ -296,8 +297,8 @@ const App: React.FC = () => {
                         onClick={() => handleQuickLog(false)}
                         className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
                             todayLog?.snacked === false
-                            ? 'bg-green-500 border-green-500 text-white shadow-lg scale-[1.02]'
-                            : 'bg-white border-gray-100 text-gray-400 hover:border-green-200 hover:bg-green-50 hover:text-green-600'
+                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-100 scale-[1.02]'
+                            : 'bg-white border-slate-100 text-slate-400 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600'
                         }`}
                     >
                         <CheckCircle size={28} className={todayLog?.snacked === false ? "text-white" : "currentColor"} />
@@ -308,8 +309,8 @@ const App: React.FC = () => {
                         onClick={() => handleQuickLog(true)}
                         className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
                             todayLog?.snacked === true
-                            ? 'bg-orange-500 border-orange-500 text-white shadow-lg scale-[1.02]'
-                            : 'bg-white border-gray-100 text-gray-400 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600'
+                            ? 'bg-rose-500 border-rose-500 text-white shadow-lg shadow-rose-100 scale-[1.02]'
+                            : 'bg-white border-slate-100 text-slate-400 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600'
                         }`}
                     >
                         <XCircle size={28} className={todayLog?.snacked === true ? "text-white" : "currentColor"} />
@@ -319,10 +320,10 @@ const App: React.FC = () => {
             </div>
 
             {/* Quick Weight Log */}
-            <div className="bg-white rounded-xl shadow-sm p-5">
+            <div className="bg-white rounded-xl shadow-sm p-5 border border-slate-100">
                 <div className="flex justify-between items-center mb-3">
-                    <h3 className="font-bold text-gray-700 flex items-center gap-2">
-                        <Scale size={18} className="text-indigo-600"/> Quick Weight Log
+                    <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                        <Scale size={18} className="text-sky-600"/> Quick Weight Log
                     </h3>
                 </div>
                 <div className="flex gap-2">
@@ -332,17 +333,16 @@ const App: React.FC = () => {
                         value={quickWeight}
                         onChange={(e) => {
                             const val = e.target.value;
-                            // Allow numbers and one decimal point
                             if (val === '' || /^\d*\.?\d*$/.test(val)) {
                                 setQuickWeight(val);
                             }
                         }}
                         placeholder="kg"
-                        className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg font-bold text-gray-900 bg-white placeholder-gray-400"
+                        className="flex-1 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-lg font-bold text-slate-800 bg-white placeholder-slate-300"
                     />
                     <button 
                         onClick={handleQuickWeightSave}
-                        className="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition-colors"
+                        className="bg-sky-600 text-white px-6 rounded-xl font-bold hover:bg-sky-700 transition-colors shadow-lg shadow-sky-200"
                     >
                         Save
                     </button>
@@ -354,22 +354,22 @@ const App: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <button 
                 onClick={() => setCurrentView(AppView.WEIGHT)}
-                className="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center gap-2 hover:bg-indigo-50 transition-colors group"
+                className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-2 hover:bg-sky-50 transition-colors group"
               >
-                <div className="bg-indigo-100 p-3 rounded-full text-indigo-600 group-hover:scale-110 transition-transform">
+                <div className="bg-sky-100 p-3 rounded-full text-sky-600 group-hover:scale-110 transition-transform">
                     <TrendingDown size={24} />
                 </div>
-                <span className="font-semibold text-gray-700">Log Weight</span>
+                <span className="font-semibold text-slate-700">Log Weight</span>
               </button>
 
               <button 
                  onClick={() => setCurrentView(AppView.COACH)}
-                 className="bg-white p-4 rounded-xl shadow-sm flex flex-col items-center justify-center gap-2 hover:bg-purple-50 transition-colors group"
+                 className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center gap-2 hover:bg-cyan-50 transition-colors group"
               >
-                <div className="bg-purple-100 p-3 rounded-full text-purple-600 group-hover:scale-110 transition-transform">
+                <div className="bg-cyan-100 p-3 rounded-full text-cyan-600 group-hover:scale-110 transition-transform">
                     <MessageCircle size={24} />
                 </div>
-                <span className="font-semibold text-gray-700">Coach</span>
+                <span className="font-semibold text-slate-700">Coach</span>
               </button>
             </div>
           </div>
@@ -378,17 +378,17 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-24 max-w-md mx-auto shadow-2xl overflow-hidden relative">
+    <div className="min-h-screen bg-slate-50 pb-24 max-w-md mx-auto shadow-2xl overflow-hidden relative">
       {/* Top Bar */}
-      <div className="bg-white p-4 sticky top-0 z-10 border-b border-gray-200 flex justify-between items-center">
-        <div className="font-bold text-xl text-teal-700 tracking-tight">BingeBreaker</div>
+      <div className="bg-white/80 backdrop-blur-md p-4 sticky top-0 z-20 border-b border-slate-200 flex justify-between items-center">
+        <div className="font-bold text-xl text-cyan-800 tracking-tight">Rita's Final Diet</div>
         <div className="flex items-center gap-2">
-            <div className="text-xs font-medium px-2 py-1 bg-gray-100 rounded text-gray-500">
+            <div className="text-xs font-medium px-2 py-1 bg-slate-100 rounded text-slate-500">
             Target: July '26
             </div>
             <button 
                 onClick={() => setCurrentView(AppView.SETTINGS)}
-                className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
             >
                 <Settings size={20} />
             </button>
@@ -396,7 +396,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="p-4">
+      <div className="p-4 relative z-10">
         {renderContent()}
       </div>
 
@@ -409,11 +409,11 @@ const App: React.FC = () => {
       )}
 
       {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-md mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 max-w-md mx-auto z-30">
         <div className="flex justify-around items-center p-2">
           <button 
             onClick={() => setCurrentView(AppView.DASHBOARD)}
-            className={`flex flex-col items-center p-2 rounded-lg w-16 ${currentView === AppView.DASHBOARD ? 'text-teal-600' : 'text-gray-400'}`}
+            className={`flex flex-col items-center p-2 rounded-lg w-16 transition-colors ${currentView === AppView.DASHBOARD ? 'text-cyan-600' : 'text-slate-400 hover:text-slate-600'}`}
           >
             <Home size={24} />
             <span className="text-[10px] mt-1 font-medium">Home</span>
@@ -421,7 +421,7 @@ const App: React.FC = () => {
           
           <button 
              onClick={handleViewTracker}
-             className={`flex flex-col items-center p-2 rounded-lg w-16 ${currentView === AppView.TRACKER ? 'text-teal-600' : 'text-gray-400'}`}
+             className={`flex flex-col items-center p-2 rounded-lg w-16 transition-colors ${currentView === AppView.TRACKER ? 'text-cyan-600' : 'text-slate-400 hover:text-slate-600'}`}
           >
             <PenTool size={24} />
             <span className="text-[10px] mt-1 font-medium">Track</span>
@@ -429,7 +429,7 @@ const App: React.FC = () => {
 
           <button 
              onClick={() => setCurrentView(AppView.WEIGHT)}
-             className={`flex flex-col items-center p-2 rounded-lg w-16 ${currentView === AppView.WEIGHT ? 'text-teal-600' : 'text-gray-400'}`}
+             className={`flex flex-col items-center p-2 rounded-lg w-16 transition-colors ${currentView === AppView.WEIGHT ? 'text-cyan-600' : 'text-slate-400 hover:text-slate-600'}`}
           >
             <TrendingDown size={24} />
             <span className="text-[10px] mt-1 font-medium">Weight</span>
@@ -437,7 +437,7 @@ const App: React.FC = () => {
 
           <button 
              onClick={() => setCurrentView(AppView.COACH)}
-             className={`flex flex-col items-center p-2 rounded-lg w-16 ${currentView === AppView.COACH ? 'text-teal-600' : 'text-gray-400'}`}
+             className={`flex flex-col items-center p-2 rounded-lg w-16 transition-colors ${currentView === AppView.COACH ? 'text-cyan-600' : 'text-slate-400 hover:text-slate-600'}`}
           >
             <MessageCircle size={24} />
             <span className="text-[10px] mt-1 font-medium">Coach</span>

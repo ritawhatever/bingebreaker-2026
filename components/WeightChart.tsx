@@ -185,12 +185,12 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="bg-white p-6 rounded-xl shadow-md">
+      <div className="bg-white p-6 rounded-xl shadow-md border border-slate-100">
         <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Weight Tracker</h2>
+            <h2 className="text-xl font-bold text-slate-800">Weight Tracker</h2>
             <button 
                 onClick={onViewHistory}
-                className="text-indigo-600 hover:bg-indigo-50 p-2 rounded-full transition-colors flex items-center gap-1 text-xs font-bold"
+                className="text-sky-600 hover:bg-sky-50 p-2 rounded-full transition-colors flex items-center gap-1 text-xs font-bold"
             >
                 <History size={18} /> History
             </button>
@@ -198,25 +198,25 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
         
         {/* Weekly Avg Comparison */}
         {weeklyStats.hasData && (
-             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 mb-6">
-                <h3 className="text-indigo-800 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wider">
+             <div className="bg-gradient-to-r from-sky-50 to-cyan-50 p-4 rounded-xl border border-sky-100 mb-6">
+                <h3 className="text-sky-800 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wider">
                      <Target size={14} /> Weekly Trend (7-Day Avg)
                 </h3>
                 <div className="flex items-center justify-around">
                     <div className="text-center">
-                         <div className="text-[10px] uppercase text-gray-500 font-semibold mb-1">Previous 7 Days</div>
-                         <div className="font-bold text-gray-500 text-lg">{weeklyStats.prevAvg} <span className="text-xs">kg</span></div>
+                         <div className="text-[10px] uppercase text-slate-500 font-semibold mb-1">Previous 7 Days</div>
+                         <div className="font-bold text-slate-500 text-lg">{weeklyStats.prevAvg} <span className="text-xs">kg</span></div>
                     </div>
                     
                     <div className="flex flex-col items-center">
-                        <ArrowRight size={16} className="text-indigo-300 mb-1" />
+                        <ArrowRight size={16} className="text-sky-300 mb-1" />
                         {Number(weeklyStats.diff) < 0 ? (
-                            <div className="flex items-center text-green-600 bg-green-100 px-2 py-1 rounded-md text-xs font-bold">
+                            <div className="flex items-center text-emerald-600 bg-emerald-100 px-2 py-1 rounded-md text-xs font-bold">
                                 <TrendingDown size={12} className="mr-1" />
                                 {Math.abs(Number(weeklyStats.diff))} kg
                             </div>
                         ) : (
-                            <div className="flex items-center text-red-500 bg-red-100 px-2 py-1 rounded-md text-xs font-bold">
+                            <div className="flex items-center text-rose-500 bg-rose-100 px-2 py-1 rounded-md text-xs font-bold">
                                 <TrendingUp size={12} className="mr-1" />
                                 +{Math.abs(Number(weeklyStats.diff))} kg
                             </div>
@@ -224,8 +224,8 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
                     </div>
                     
                     <div className="text-center">
-                         <div className="text-[10px] uppercase text-gray-500 font-semibold mb-1">Last 7 Days</div>
-                         <div className="font-bold text-indigo-700 text-2xl">{weeklyStats.currentAvg} <span className="text-sm">kg</span></div>
+                         <div className="text-[10px] uppercase text-slate-500 font-semibold mb-1">Last 7 Days</div>
+                         <div className="font-bold text-sky-700 text-2xl">{weeklyStats.currentAvg} <span className="text-sm">kg</span></div>
                     </div>
                 </div>
             </div>
@@ -233,24 +233,24 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
 
         {/* Comparison Box (Target vs Actual) */}
         {weightComparison && (
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
-                <h3 className="text-gray-500 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wide">
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6">
+                <h3 className="text-slate-400 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wide">
                     Vs Goal Plan
                 </h3>
                 <div className="flex items-center justify-between mb-3">
                     <div>
-                        <div className="text-xs text-gray-400">Target Today</div>
-                        <div className="text-xl font-bold text-gray-400">{weightComparison.target} <span className="text-sm">kg</span></div>
+                        <div className="text-xs text-slate-400">Target Today</div>
+                        <div className="text-xl font-bold text-slate-400">{weightComparison.target} <span className="text-sm">kg</span></div>
                     </div>
                     
                     <div className="text-right">
-                        <div className="text-xs text-gray-400">Current</div>
-                        <div className={`text-xl font-bold ${weightComparison.onTrack ? 'text-green-600' : 'text-orange-500'}`}>
+                        <div className="text-xs text-slate-400">Current</div>
+                        <div className={`text-xl font-bold ${weightComparison.onTrack ? 'text-emerald-600' : 'text-rose-500'}`}>
                             {weightComparison.current} <span className="text-sm">kg</span>
                         </div>
                     </div>
                 </div>
-                <div className={`mt-1 text-xs font-medium p-2 rounded-lg text-center ${weightComparison.onTrack ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-700'}`}>
+                <div className={`mt-1 text-xs font-medium p-2 rounded-lg text-center ${weightComparison.onTrack ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
                     {weightComparison.onTrack 
                         ? `You are ${Math.abs(weightComparison.diff).toFixed(1)} kg ahead of schedule!` 
                         : `You are ${Math.abs(weightComparison.diff).toFixed(1)} kg behind schedule.`}
@@ -259,22 +259,22 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
         )}
 
         {/* Input Section */}
-        <div className="bg-indigo-50/50 p-4 rounded-2xl mb-8 border border-indigo-100">
-            <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
-                <Plus size={16} className="text-indigo-500" /> Log New Weight
+        <div className="bg-sky-50/50 p-4 rounded-2xl mb-8 border border-sky-100">
+            <h3 className="text-sm font-bold text-sky-900 mb-3 flex items-center gap-2">
+                <Plus size={16} className="text-sky-500" /> Log New Weight
             </h3>
             <div className="flex gap-3 items-end">
                 <div className="w-1/3">
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Date</label>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Date</label>
                     <input 
                         type="date" 
                         value={logDate} 
                         onChange={(e) => setLogDate(e.target.value)}
-                        className="w-full h-14 px-3 bg-white border-2 border-transparent hover:border-indigo-100 rounded-xl text-gray-600 font-semibold text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none shadow-sm"
+                        className="w-full h-14 px-3 bg-white border-2 border-transparent hover:border-sky-100 rounded-xl text-slate-600 font-semibold text-sm focus:border-sky-500 focus:ring-4 focus:ring-sky-100 transition-all outline-none shadow-sm"
                     />
                 </div>
                 <div className="flex-1">
-                    <label className="block text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-1.5 ml-1">Weight</label>
+                    <label className="block text-[10px] font-bold text-sky-400 uppercase tracking-wider mb-1.5 ml-1">Weight</label>
                     <div className="relative">
                         <input 
                             type="number" 
@@ -282,15 +282,15 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
                             value={newWeight} 
                             onChange={(e) => setNewWeight(e.target.value)}
                             placeholder="0.0"
-                            className="w-full h-14 pl-4 pr-10 text-3xl font-black text-indigo-900 bg-white border-2 border-transparent hover:border-indigo-100 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none shadow-sm placeholder-indigo-100"
+                            className="w-full h-14 pl-4 pr-10 text-3xl font-black text-sky-900 bg-white border-2 border-transparent hover:border-sky-100 rounded-xl focus:border-sky-500 focus:ring-4 focus:ring-sky-100 transition-all outline-none shadow-sm placeholder-sky-100"
                         />
-                        <span className="absolute right-4 bottom-3 text-sm font-bold text-gray-400 pointer-events-none mb-1">kg</span>
+                        <span className="absolute right-4 bottom-3 text-sm font-bold text-slate-400 pointer-events-none mb-1">kg</span>
                     </div>
                 </div>
                 <button 
                     onClick={handleAddWeight}
                     disabled={!newWeight}
-                    className="h-14 w-14 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 active:scale-95 transition-all flex items-center justify-center flex-shrink-0 disabled:opacity-50 disabled:shadow-none"
+                    className="h-14 w-14 bg-sky-600 text-white rounded-xl hover:bg-sky-700 shadow-lg shadow-sky-200 active:scale-95 transition-all flex items-center justify-center flex-shrink-0 disabled:opacity-50 disabled:shadow-none"
                 >
                     <Plus size={32} strokeWidth={3} />
                 </button>
@@ -299,17 +299,17 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Start</div>
-                <div className="text-lg font-bold text-gray-700">{settings.startWeight} kg</div>
+            <div className="text-center p-3 bg-slate-50 rounded-lg">
+                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider">Start</div>
+                <div className="text-lg font-bold text-slate-600">{settings.startWeight} kg</div>
             </div>
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-                <div className="text-xs text-purple-600 uppercase font-bold tracking-wider">Current</div>
-                <div className="text-lg font-bold text-purple-900">{latestWeight} kg</div>
+            <div className="text-center p-3 bg-cyan-50 rounded-lg">
+                <div className="text-xs text-cyan-600 uppercase font-bold tracking-wider">Current</div>
+                <div className="text-lg font-bold text-cyan-900">{latestWeight} kg</div>
             </div>
-             <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Goal</div>
-                <div className="text-lg font-bold text-gray-700">{settings.goalWeight} kg</div>
+             <div className="text-center p-3 bg-slate-50 rounded-lg">
+                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider">Goal</div>
+                <div className="text-lg font-bold text-slate-600">{settings.goalWeight} kg</div>
             </div>
         </div>
 
@@ -317,19 +317,19 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
               <XAxis 
                 dataKey="date" 
                 tickFormatter={(str) => format(parseISO(str), 'MMM d')}
                 fontSize={10}
-                tick={{fill: '#6b7280'}}
+                tick={{fill: '#94a3b8'}}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis 
                 domain={['dataMin - 1', 'dataMax + 1']} 
                 fontSize={10}
-                tick={{fill: '#6b7280'}}
+                tick={{fill: '#94a3b8'}}
                 axisLine={false}
                 tickLine={false}
               />
@@ -341,7 +341,7 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
               <Line 
                 type="monotone" 
                 dataKey="target" 
-                stroke="#9ca3af" 
+                stroke="#cbd5e1" 
                 strokeDasharray="5 5" 
                 name="Target Plan" 
                 dot={false}
@@ -350,7 +350,7 @@ const WeightChart: React.FC<WeightChartProps> = ({ onViewHistory, onCelebrate })
               <Line 
                 type="monotone" 
                 dataKey="actual" 
-                stroke="#4f46e5" 
+                stroke="#0284c7" // sky-600 
                 name="Actual Weight" 
                 strokeWidth={3}
                 connectNulls

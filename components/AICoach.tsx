@@ -83,7 +83,7 @@ const AICoach: React.FC = () => {
             href={part} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className={`underline break-all font-medium ${isUser ? 'text-teal-200 hover:text-white' : 'text-teal-600 hover:text-teal-800'}`}
+            className={`underline break-all font-medium ${isUser ? 'text-cyan-200 hover:text-white' : 'text-cyan-600 hover:text-cyan-800'}`}
           >
             {part}
           </a>
@@ -94,8 +94,8 @@ const AICoach: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] bg-white rounded-xl shadow-md overflow-hidden">
-      <div className="bg-teal-600 p-4 text-white flex flex-col gap-3">
+    <div className="flex flex-col h-[calc(100vh-140px)] bg-white rounded-xl shadow-md overflow-hidden border border-slate-100">
+      <div className="bg-cyan-600 p-4 text-white flex flex-col gap-3 shadow-sm z-10">
         <div className="flex justify-between items-center">
             <h2 className="font-bold text-lg flex items-center gap-2">
                 <Bot size={20} /> Coach Gemini
@@ -105,65 +105,65 @@ const AICoach: React.FC = () => {
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
             <button 
                 onClick={() => handleSend("Distract me with a quick mental game (like 5-4-3-2-1 or alphabet game)!")}
-                className="bg-teal-500 hover:bg-teal-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-teal-400 whitespace-nowrap"
+                className="bg-cyan-500 hover:bg-cyan-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-cyan-400 whitespace-nowrap shadow-sm"
             >
                 <Gamepad2 size={14} /> Game
             </button>
             <button 
                 onClick={() => handleSend("Give me a fun trivia question to guess. Don't tell me the answer yet!")}
-                className="bg-indigo-500 hover:bg-indigo-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-indigo-400 whitespace-nowrap"
+                className="bg-sky-500 hover:bg-sky-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-sky-400 whitespace-nowrap shadow-sm"
             >
                 <Brain size={14} /> Trivia
             </button>
             <button 
                 onClick={() => handleSend("Guide me through a quick breathing exercise to kill a craving.")}
-                className="bg-sky-500 hover:bg-sky-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-sky-400 whitespace-nowrap"
+                className="bg-teal-500 hover:bg-teal-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-teal-400 whitespace-nowrap shadow-sm"
             >
                 <Wind size={14} /> Breathe
             </button>
             <button 
                 onClick={() => handleSend("Tell me a funny joke to distract me.")}
-                className="bg-yellow-500 hover:bg-yellow-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-yellow-400 whitespace-nowrap"
+                className="bg-blue-400 hover:bg-blue-300 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-blue-300 whitespace-nowrap shadow-sm"
             >
                 <Smile size={14} /> Joke
             </button>
             <button 
                 onClick={() => handleSend("Tell me one interesting news story from this week (any topic) to distract me.")}
-                className="bg-blue-500 hover:bg-blue-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-blue-400 whitespace-nowrap"
+                className="bg-indigo-400 hover:bg-indigo-300 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-indigo-300 whitespace-nowrap shadow-sm"
             >
                 <Newspaper size={14} /> News
             </button>
             <button 
                 onClick={() => handleSend("Give me an inspiring quote that encourages me to lose weight and achieve my goals.")}
-                className="bg-pink-500 hover:bg-pink-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-pink-400 whitespace-nowrap"
+                className="bg-violet-400 hover:bg-violet-300 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-violet-300 whitespace-nowrap shadow-sm"
             >
                 <Quote size={14} /> Quote
             </button>
             <button 
-                onClick={() => handleSend("Describe my future self in July 2026 at 53kg to motivate me.")}
-                className="bg-purple-500 hover:bg-purple-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-purple-400 whitespace-nowrap"
+                onClick={() => handleSend("Pretend to be my future self from July 2026 (53kg). Talk to me about the choice I'm about to make right now. Be compassionate but firm.")}
+                className="bg-fuchsia-400 hover:bg-fuchsia-300 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-fuchsia-300 whitespace-nowrap shadow-sm"
             >
                 <Sparkles size={14} /> Future Me
             </button>
             <button 
                 onClick={() => handleSend("I am about to binge eat snacks right now! Help me stop!")}
-                className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-full font-bold animate-pulse flex items-center gap-1 whitespace-nowrap"
+                className="bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded-full font-bold animate-pulse flex items-center gap-1 whitespace-nowrap shadow-sm"
             >
                 <AlertTriangle size={14} /> SOS
             </button>
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
         {messages.map((msg) => (
           <div 
             key={msg.id} 
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`max-w-[85%] p-3 rounded-2xl ${
+            <div className={`max-w-[85%] p-3 rounded-2xl shadow-sm ${
               msg.role === 'user' 
-                ? 'bg-teal-600 text-white rounded-br-none' 
-                : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'
+                ? 'bg-cyan-600 text-white rounded-br-none' 
+                : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
             }`}>
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
                 {renderMessageText(msg.text, msg.role === 'user')}
@@ -173,7 +173,7 @@ const AICoach: React.FC = () => {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-200 p-3 rounded-2xl rounded-bl-none flex items-center gap-2 text-gray-500 text-sm">
+            <div className="bg-slate-200 p-3 rounded-2xl rounded-bl-none flex items-center gap-2 text-slate-500 text-sm">
               <Loader2 className="animate-spin" size={16} /> Thinking...
             </div>
           </div>
@@ -181,19 +181,19 @@ const AICoach: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
+      <div className="p-3 bg-white border-t border-slate-100 flex gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder="Type here..."
-          className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"
+          className="flex-1 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none text-sm"
         />
         <button 
             onClick={() => handleSend()}
             disabled={loading || !input.trim()}
-            className="bg-teal-600 text-white p-2 rounded-lg hover:bg-teal-700 disabled:bg-gray-300"
+            className="bg-cyan-600 text-white p-2 rounded-lg hover:bg-cyan-700 disabled:bg-slate-300"
         >
           <Send size={20} />
         </button>
