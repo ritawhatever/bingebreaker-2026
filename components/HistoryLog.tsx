@@ -1,8 +1,9 @@
-import React from 'react';
-import { getDailyLogs } from '../services/storage';
+import React, { useState, useEffect } from 'react';
+import { getDailyLogs, deleteDailyLog } from '../services/storage';
 import { MOODS } from '../constants';
-import { CheckCircle, XCircle, Calendar, ArrowLeft, Edit2 } from 'lucide-react';
+import { CheckCircle, XCircle, Calendar, ArrowLeft, Edit2, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { DailyEntry } from '../types';
 
 interface HistoryLogProps {
   onEdit: (date: string) => void;
@@ -10,7 +11,24 @@ interface HistoryLogProps {
 }
 
 const HistoryLog: React.FC<HistoryLogProps> = ({ onEdit, onBack }) => {
-  const logs = getDailyLogs().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const [logs, setLogs] = useState<DailyEntry[]>([]);
+
+  useEffect(() => {
+    loadLogs();
+  }, []);
+
+  const loadLogs = () => {
+    const data = getDailyLogs().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    setLogs(data);
+  };
+
+  const handleDelete = (e: React.MouseEvent, date: string) => {
+    e.stopPropagation(); // Prevent triggering the row click
+    if (window.confirm('Are you sure you want to delete this record permanently?')) {
+        deleteDailyLog(date);
+        loadLogs(); // Refresh list
+    }
+  };
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-[calc(100vh-140px)]">
@@ -37,7 +55,7 @@ const HistoryLog: React.FC<HistoryLogProps> = ({ onEdit, onBack }) => {
                 <div 
                   key={log.date} 
                   onClick={() => onEdit(log.date)}
-                  className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm active:scale-[0.99] transition-all cursor-pointer flex gap-4 items-start group"
+                  className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm active:scale-[0.99] transition-all cursor-pointer flex gap-4 items-start group relative pr-12"
                 >
                    <div className="mt-1">
                      {log.snacked ? (
@@ -77,8 +95,19 @@ const HistoryLog: React.FC<HistoryLogProps> = ({ onEdit, onBack }) => {
                         !log.snackDetails && <p className="text-xs text-gray-300 mt-2 italic">No notes added</p>
                      )}
                    </div>
-                   <div className="self-center opacity-0 group-hover:opacity-100 transition-opacity text-gray-400">
-                        <Edit2 size={16} />
+                   
+                   {/* Actions */}
+                   <div className="absolute right-2 top-2 bottom-2 flex flex-col justify-between items-end">
+                       <button 
+                            onClick={(e) => handleDelete(e, log.date)}
+                            className="p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                            title="Delete Entry"
+                       >
+                           <Trash2 size={18} />
+                       </button>
+                       <div className="p-2 text-gray-300">
+                            <Edit2 size={16} />
+                       </div>
                    </div>
                 </div>
             );

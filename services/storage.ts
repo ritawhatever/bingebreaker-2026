@@ -25,6 +25,12 @@ export const saveDailyLog = (entry: DailyEntry): void => {
   localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(logs));
 };
 
+export const deleteDailyLog = (date: string): void => {
+  const logs = getDailyLogs();
+  const filtered = logs.filter(l => l.date !== date);
+  localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(logs.length !== filtered.length ? filtered : logs));
+};
+
 export const getWeightLogs = (): WeightEntry[] => {
   const data = localStorage.getItem(STORAGE_KEYS.WEIGHT_LOGS);
   return data ? JSON.parse(data) : [];

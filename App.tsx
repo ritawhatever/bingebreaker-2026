@@ -222,7 +222,7 @@ const App: React.FC = () => {
                     <span className="text-4xl font-bold leading-none">{streak}</span>
                     <span className="text-sm opacity-80 mb-1">/ {settings.streakGoal} days</span>
                     {isGoalMet && (
-                        <span className="ml-auto text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full animate-pulse">
+                        <span className="ml-auto text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full">
                             Goal Met!
                         </span>
                     )}

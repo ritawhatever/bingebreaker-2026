@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getCoachResponse } from '../services/gemini';
 import { getChatHistory, saveChatHistory } from '../services/storage';
 import { ChatMessage } from '../types';
-import { Send, User, Bot, AlertTriangle, Loader2, Gamepad2, Brain, Wind, Smile, Sparkles, Newspaper } from 'lucide-react';
+import { Send, User, Bot, AlertTriangle, Loader2, Gamepad2, Brain, Wind, Smile, Sparkles, Newspaper, Quote } from 'lucide-react';
 
 const AICoach: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -132,6 +132,12 @@ const AICoach: React.FC = () => {
                 className="bg-blue-500 hover:bg-blue-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-blue-400 whitespace-nowrap"
             >
                 <Newspaper size={14} /> News
+            </button>
+            <button 
+                onClick={() => handleSend("Give me an inspiring quote that encourages me to lose weight and achieve my goals.")}
+                className="bg-pink-500 hover:bg-pink-400 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors border border-pink-400 whitespace-nowrap"
+            >
+                <Quote size={14} /> Quote
             </button>
             <button 
                 onClick={() => handleSend("Describe my future self in July 2026 at 53kg to motivate me.")}

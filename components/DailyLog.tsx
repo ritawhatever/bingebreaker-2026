@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DailyEntry } from '../types';
 import { MOODS } from '../constants';
-import { Save, CheckCircle, XCircle, History } from 'lucide-react';
-import { saveDailyLog, getDailyLogs } from '../services/storage';
+import { Save, CheckCircle, XCircle, History, Trash2, RotateCcw, X } from 'lucide-react';
+import { saveDailyLog, getDailyLogs, deleteDailyLog } from '../services/storage';
 
 interface DailyLogProps {
   targetDate?: string;
@@ -52,7 +52,15 @@ const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory, onCelebr
   }, [date]);
 
   const handleSave = () => {
-    if (snacked === null) return;
+    if (snacked === null) {
+        // If snacked is cleared, we treat this as deleting the entry to ensure "no entry" for the day
+        if (window.confirm('Saving with no selection will remove this day\'s record. Continue?')) {
+            deleteDailyLog(date);
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+        }
+        return;
+    }
     
     const entry: DailyEntry = {
       date,
@@ -69,6 +77,22 @@ const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory, onCelebr
 
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete the record for this date?')) {
+        deleteDailyLog(date);
+        setSnacked(null);
+        setSnackDetails('');
+        setMood('');
+        setNotes('');
+        setSaved(false);
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSnacked(null);
+    setSnackDetails('');
   };
 
   return (
@@ -94,9 +118,20 @@ const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory, onCelebr
       </div>
 
       <div className="mb-8">
-        <label className="block text-lg font-medium text-gray-800 mb-4 text-center">
-          Did you snack around dinner?
-        </label>
+        <div className="flex justify-between items-center mb-4">
+            <label className="block text-lg font-medium text-gray-800 text-center">
+            Did you snack around dinner?
+            </label>
+            {snacked !== null && (
+                <button 
+                    onClick={handleClearSelection}
+                    className="text-xs flex items-center gap-1 text-gray-400 hover:text-gray-600 bg-gray-50 px-2 py-1 rounded-full transition-colors"
+                >
+                    <RotateCcw size={12} /> Reset
+                </button>
+            )}
+        </div>
+        
         <div className="flex gap-4 justify-center mb-4">
           <button
             onClick={() => setSnacked(false)}
@@ -124,15 +159,25 @@ const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory, onCelebr
         </div>
 
         {snacked === true && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300 relative">
                 <label className="block text-sm font-bold text-orange-700 mb-2">What did you eat?</label>
-                <input
-                    type="text"
-                    value={snackDetails}
-                    onChange={(e) => setSnackDetails(e.target.value)}
-                    placeholder="e.g. A bag of chips, ice cream..."
-                    className="w-full p-3 border border-orange-200 bg-orange-50 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none text-gray-800 placeholder-orange-300"
-                />
+                <div className="relative">
+                    <input
+                        type="text"
+                        value={snackDetails}
+                        onChange={(e) => setSnackDetails(e.target.value)}
+                        placeholder="e.g. A bag of chips, ice cream..."
+                        className="w-full p-3 pr-10 border border-orange-200 bg-orange-50 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none text-gray-800 placeholder-orange-300"
+                    />
+                    {snackDetails && (
+                        <button 
+                            onClick={() => setSnackDetails('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-300 hover:text-orange-500"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
             </div>
         )}
       </div>
@@ -167,25 +212,38 @@ const DailyLog: React.FC<DailyLogProps> = ({ targetDate, onViewHistory, onCelebr
 
       <button
         onClick={handleSave}
-        disabled={snacked === null}
         className={`w-full py-4 rounded-lg flex items-center justify-center gap-2 text-white font-bold text-lg transition-colors ${
-          snacked === null 
-            ? 'bg-gray-300 cursor-not-allowed' 
-            : saved 
+           saved 
               ? 'bg-green-600' 
-              : 'bg-teal-600 hover:bg-teal-700'
+              : snacked === null 
+                ? 'bg-gray-400 hover:bg-gray-500' 
+                : 'bg-teal-600 hover:bg-teal-700'
         }`}
       >
         {saved ? (
           <>
-            <CheckCircle size={24} /> Saved!
+            <CheckCircle size={24} /> {snacked === null ? 'Cleared!' : 'Saved!'}
           </>
         ) : (
           <>
-            <Save size={24} /> Save Record
+            {snacked === null ? <Trash2 size={24} /> : <Save size={24} />} 
+            {snacked === null ? 'Clear Day Record' : 'Save Record'}
           </>
         )}
       </button>
+
+      {/* Legacy delete button can be hidden or kept as backup, but the main save button now handles clearing.
+          I'll hide it if snacked is null since the main button does it. 
+          If snacked is set, I'll keep it as an explicit Delete option.
+      */}
+      {snacked !== null && (
+        <button
+            onClick={handleDelete}
+            className="w-full mt-4 py-2 rounded-lg flex items-center justify-center gap-2 text-red-500 hover:bg-red-50 transition-colors text-sm font-semibold"
+        >
+            <Trash2 size={16} /> Delete Entry
+        </button>
+      )}
     </div>
   );
 };
